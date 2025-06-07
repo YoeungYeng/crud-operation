@@ -14,7 +14,7 @@ class Brand extends Controller
     public function index()
     {
         $brands = ModelsBrand::all();
-        return view('brand.create', compact('brands'));
+        return view('brand.index', compact('brands'));
     }
 
     /**
@@ -23,6 +23,7 @@ class Brand extends Controller
     public function create()
     {
         //
+        return view('brand.create');
     }
 
     /**
@@ -33,7 +34,7 @@ class Brand extends Controller
         // Validate the request
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email',
             'phone' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:png,jpg,jpeg,gif|max:2048'
         ]);
@@ -108,7 +109,7 @@ class Brand extends Controller
         // Validate the request
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
+            'email' => 'required|email',
             'phone' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:png,jpg,jpeg,gif|max:2048'
         ]);
