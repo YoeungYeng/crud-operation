@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <label for="logo" class="block text-sm font-medium text-gray-700">Logo:</label>
-                    <input type="file" name="logo" id="logo" accept="image/*" required
+                    <input type="text" name="logo" id="logo" required
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
@@ -64,17 +64,13 @@
                         <td class="px-6 py-4">{{ $brand->email }}</td>
                         <td class="px-6 py-4">{{ $brand->phone }}</td>
                         <td class="px-6 py-4">
-                            @if ($brand->logo)
-                                <img src="{{ asset('storage/' . $brand->logo) }}" alt="Brand Logo" class="h-10 w-auto">
-                            @else
-                                <span class="text-gray-400">No logo</span>
-                            @endif
+                            {{ $brand->logo }}
+                        </td>
                         </td>
                         <td class="px-6 py-4">
-                            <a href="{{ route('brand.edit', $brand->id) }}"
-                                class="text-blue-500 hover:underline">Edit</a>
-                            <form action="{{ route('brand.destroy', $brand->id) }}" method="POST"
-                                class="inline-block ml-2" onsubmit="return confirm('Are you sure?');">
+                            <a href="{{ route('brand.edit', $brand->id) }}" class="text-blue-500 hover:underline">Edit</a>
+                            <form action="{{ route('brand.destroy', $brand->id) }}" method="POST" class="inline-block ml-2"
+                                onsubmit="return confirm('Are you sure?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-500 hover:underline">Delete</button>

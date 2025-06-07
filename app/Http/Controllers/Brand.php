@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand as ModelsBrand;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,6 +23,7 @@ class Brand extends Controller
      */
     public function create()
     {
+        //
         return view('brand.create');
     }
 
@@ -36,57 +38,61 @@ class Brand extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|email',
                 'phone' => 'required|string|max:255',
-                'logo' => 'nullable|image|mimes:png,jpg,jpeg,gif|max:2048',
+                'logo' => 'required|string|max:255',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'status' => 400,
-                    'message' => $validator->errors(),
+                    'message' => $validator->errors()
                 ], 400);
             }
 
             // Handle file upload for logo if present
-            $logoPath = null;
-            if ($request->hasFile('logo')) {
-                $image = $request->file('logo');
+            // $logoPath = null;
+            // if ($request->hasFile('logo')) {
+            //     $image = $request->file('logo');
 
-                if (!$image->isValid()) {
-                    return response()->json([
-                        'status' => 400,
-                        'message' => 'Invalid image file',
-                    ], 400);
-                }
+            //     if (!$image->isValid()) {
+            //         return response()->json([
+            //             'status' => 400,
+            //             'message' => 'Invalid image file',
+            //         ], 400);
+            //     }
 
-                // Store the image
-                $logoPath = $image->store('assets', 'public');
-            }
+            //     // Store the image
+            //     $logoPath = $image->store('assets', 'public');
+            // }
 
             // Save the brand to the database
             ModelsBrand::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'logo' => $logoPath,
+                'logo' => $request->logo,
             ]);
 
             return redirect()->route('brand.index')->with('success', 'Brand created successfully.');
+
         } catch (\Exception $e) {
+            // Log the exception and return error response
             \Log::error('Brand store error: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 500,
-                'message' => 'An error occurred while saving the brand.',
+                'message' => 'An error occurred while saving the brand.'
             ], 500);
         }
     }
+
+
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        // Optional: implement if needed
+        //
     }
 
     /**
@@ -94,8 +100,11 @@ class Brand extends Controller
      */
     public function edit(string $id)
     {
+        //
         $brand = ModelsBrand::findOrFail($id);
-        return view('brand.edit', compact('brand'));
+        $brands = ModelsBrand::all(); // <-- get all categories for the table
+
+        return view('brand.edit', compact('brand', 'brands'));
     }
 
     /**
@@ -103,59 +112,51 @@ class Brand extends Controller
      */
     public function update(Request $request, string $id)
     {
-        try {
-            // Find the brand
-            $brand = ModelsBrand::findOrFail($id);
+        // Find the brand
+        $brand = ModelsBrand::findOrFail($id);
 
-            // Validate the request
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-                'email' => 'required|email',
-                'phone' => 'required|string|max:255',
-                'logo' => 'nullable|image|mimes:png,jpg,jpeg,gif|max:2048',
-            ]);
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'required|string|max:255',
+            'logo' => 'required|string|max:255'
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => 400,
-                    'message' => $validator->errors(),
-                ], 400);
-            }
-
-            // Handle file upload
-            if ($request->hasFile('logo')) {
-                $image = $request->file('logo');
-
-                if (!$image->isValid()) {
-                    return response()->json([
-                        'status' => 400,
-                        'message' => 'Invalid image file',
-                    ], 400);
-                }
-
-                // Optionally: Delete old image if needed
-                // \Storage::disk('public')->delete($brand->logo);
-
-                // Store new image and update path
-                $image_path = $image->store('assets', 'public');
-                $brand->logo = $image_path;
-            }
-
-            // Update brand data
-            $brand->name = $request->input('name');
-            $brand->email = $request->input('email');
-            $brand->phone = $request->input('phone');
-            $brand->save();
-
-            return redirect()->route('brand.index')->with('success', 'Brand updated successfully.');
-        } catch (\Exception $e) {
-            \Log::error('Brand update error: ' . $e->getMessage());
-
+        if ($validator->fails()) {
             return response()->json([
-                'status' => 500,
-                'message' => 'An error occurred while updating the brand.',
-            ], 500);
+                'status' => 400,
+                'message' => $validator->errors()
+            ], 400);
         }
+
+        // Handle file upload
+        // if ($request->hasFile('logo')) {
+        //     $image = $request->file('logo');
+
+        //     if (!$image->isValid()) {
+        //         return response()->json([
+        //             'status' => 400,
+        //             'message' => 'Invalid image file',
+        //         ], 400);
+        //     }
+
+        //     // Optionally: Delete old image if needed
+        //     // Storage::disk('public')->delete($brand->logo);
+
+        //     // Store new image and update path
+        //     $image_path = $image->store('assets', 'public');
+        //     $brand->logo = $image_path;
+        // }
+
+        // Update the brand data
+        $brand->name = $request->name;
+        $brand->email = $request->email;
+        $brand->phone = $request->phone;
+        $brand->logo = $request->logo;
+        $brand->save();
+
+        return redirect()->route('brand.index')->with('success', 'Brand updated successfully.');
     }
 
     /**
@@ -163,22 +164,10 @@ class Brand extends Controller
      */
     public function destroy(string $id)
     {
-        try {
-            $brand = ModelsBrand::findOrFail($id);
+        //
+        $brand = ModelsBrand::findOrFail($id);
+        $brand->delete();
 
-            // Optionally delete logo image file
-            // \Storage::disk('public')->delete($brand->logo);
-
-            $brand->delete();
-
-            return redirect()->route('brand.index')->with('success', 'Brand deleted successfully.');
-        } catch (\Exception $e) {
-            \Log::error('Brand delete error: ' . $e->getMessage());
-
-            return response()->json([
-                'status' => 500,
-                'message' => 'An error occurred while deleting the brand.',
-            ], 500);
-        }
+        return redirect()->route('brand.index')->with('success', 'Brand deleted successfully.');
     }
 }

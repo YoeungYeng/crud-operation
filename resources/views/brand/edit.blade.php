@@ -28,14 +28,11 @@
 
             <div>
                 <label for="logo" class="block text-sm font-medium text-gray-700">Logo:</label>
-                <input type="file" name="logo" id="logo" accept="image/*"
-                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
-                @if ($brand->logo)
-                    <div class="mt-2">
-                        <p class="text-sm text-gray-500">Current Logo:</p>
-                        <img src="{{ asset('storage/' . $brand->logo) }}" alt="Current Logo" class="h-12 mt-1">
-                    </div>
-                @endif
+                <div>
+                    <label for="logo" class="block text-sm font-medium text-gray-700">Logo:</label>
+                    <input type="text" name="logo" id="logo" required value="{{ old('logo', $brand->logo) }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
             </div>
 
             <div class="text-center mt-4">
@@ -67,13 +64,7 @@
                         <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $b->name }}</td>
                         <td class="px-6 py-4">{{ $b->email }}</td>
                         <td class="px-6 py-4">{{ $b->phone }}</td>
-                        <td class="px-6 py-4">
-                            @if ($b->logo)
-                                <img src="{{ asset('storage/' . $b->logo) }}" alt="Logo" class="h-10 w-auto">
-                            @else
-                                <span class="text-gray-400">No logo</span>
-                            @endif
-                        </td>
+                        <td class="px-6 py-4">{{ $b->logo }}</td>
                         <td class="px-6 py-4">
                             <a href="{{ route('brand.edit', $b->id) }}" class="text-blue-500 hover:underline">Edit</a>
                             <form action="{{ route('brand.destroy', $b->id) }}" method="POST" class="inline-block ml-2"
