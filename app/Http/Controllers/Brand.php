@@ -57,18 +57,20 @@ class Brand extends Controller
 
         // Save image to database
         if ($request->hasFile('logo')) {
-            $image_path = $request->file('logo')->store('assets', 'public'); // Store in storage/app/public/images
-            $logoPath = asset('storage/' . $image_path); // Convert to URL
+            $image_path = $request->file('logo')->store('assets', 'public'); // Store in storage/app/public/assets
+            $logoPath = $image_path; // Save relative path for DB
         } else {
             $logoPath = null; // If no logo is uploaded, set to null
         }
+
         // Save the brand to the database
         ModelsBrand::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'logo' => $image_path
+            'logo' => $logoPath
         ]);
+
 
 
         return redirect()->route('brand.index')->with('success', 'Brand created successfully.');
@@ -121,6 +123,7 @@ class Brand extends Controller
         // Handle file upload
         if ($request->hasFile('logo')) {
             $image = $request->file('logo');
+
             if (!$image->isValid()) {
                 return response()->json([
                     'status' => 400,
@@ -128,15 +131,18 @@ class Brand extends Controller
                 ], 400);
             }
 
+            // Optionally: Delete old image if needed
+            // Storage::disk('public')->delete($brand->logo);
+
             // Store new image and update path
             $image_path = $image->store('assets', 'public');
             $brand->logo = $image_path;
         }
 
         // Update the brand data
-        $brand->name = $request->name;
-        $brand->email = $request->email;
-        $brand->phone = $request->phone;
+        $brand->name = $request->input('name');
+        $brand->email = $request->input('email');
+        $brand->phone = $request->input('phone');
         $brand->save();
 
         return redirect()->route('brand.index')->with('success', 'Brand updated successfully.');
