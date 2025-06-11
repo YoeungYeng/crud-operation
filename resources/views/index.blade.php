@@ -20,24 +20,40 @@
         <div class="max-w-7xl mx-auto px-4">
             <ul class="flex justify-center items-center gap-6 py-4">
                 <li>
-                    <a href="/" class="hover:bg-amber-500 px-4 py-2 rounded hover:text-white transition">Home</a>
+                    <a href="/"
+                       class="{{ request()->is('/') ? 'bg-amber-500 text-white' : '' }} hover:bg-amber-500 px-4 py-2 rounded hover:text-white transition">
+                        Home
+                    </a>
                 </li>
                 <li>
                     <a href="/brand"
-                        class="hover:bg-amber-500 px-4 py-2 rounded hover:text-white transition">Brands</a>
+                       class="{{ request()->is('brand*') ? 'bg-amber-500 text-white' : '' }} hover:bg-amber-500 px-4 py-2 rounded hover:text-white transition">
+                        Brands
+                    </a>
                 </li>
                 <li>
                     <a href="/category"
-                        class="hover:bg-amber-500 px-4 py-2 rounded hover:text-white transition">Category</a>
+                       class="{{ request()->is('category*') ? 'bg-amber-500 text-white' : '' }} hover:bg-amber-500 px-4 py-2 rounded hover:text-white transition">
+                        Category
+                    </a>
                 </li>
                 <li>
                     <a href="/product"
-                        class="hover:bg-amber-500 px-4 py-2 rounded hover:text-white transition">Product</a>
+                       class="{{ request()->is('product*') ? 'bg-amber-500 text-white' : '' }} hover:bg-amber-500 px-4 py-2 rounded hover:text-white transition">
+                        Product
+                    </a>
                 </li>
             </ul>
         </div>
     </nav>
 
+    <div class="mt-24  p-6 text-center">
+        <h1 class="text-2xl bg-blue-400 p-4 text-white font-semibold">
+            Welcome Re-Exame
+        </h1>
+        
+    </div>
+    <hr>
 </body>
 
 </html>
